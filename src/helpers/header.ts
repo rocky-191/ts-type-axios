@@ -27,15 +27,15 @@ export function parseHeaders(headers: string): any {
   if (!headers) {
     return parsed
   }
+
   headers.split('\r\n').forEach(line => {
-    let [key, val] = line.split(':')
+    let [key, ...values] = line.split(':')
     key = key.trim().toLowerCase()
     if (!key) {
       return
     }
-    if (val) {
-      val = val.trim()
-    }
-    parsed[key] = val
+    parsed[key] = values.join(':').trim()
   })
+
+  return parsed
 }

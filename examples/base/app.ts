@@ -71,6 +71,8 @@ axios({
     a:1,
     b:2
   }
+}).then((res)=>{
+  console.log(res)
 })
 
 const paramsString='q=URLUtils.searchParams&topic=api'
