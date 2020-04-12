@@ -66,6 +66,24 @@ router.get('/error/timeout',function(req,res){
   },3000)
 })
 
+router.post('/extend/post',function(req,res){
+  setTimeout(()=>{
+    res.json('success')
+  },3000)
+})
+
+router.get('/extend/get',function(req,res){
+  res.json('extend get success')
+})
+
+router.delete('/extend/delete',function(req,res){
+  res.json('extend delete success')
+})
+
+router.put('/extend/put',function(req,res){
+  res.json('extend put success')
+})
+
 app.use(router)
 
 const port=process.env.PORT || 8080
