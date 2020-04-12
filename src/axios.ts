@@ -2,6 +2,7 @@ import { AxiosInstance, AxiosRequestConfig, AxiosStatic } from './types'
 import Axios from './core/Axios'
 import { extend } from './helpers/util'
 import defaults from './defaults'
+import mergeConfig from './core/mergeConfig'
 
 function createInstance(config: AxiosRequestConfig): AxiosStatic {
   const context = new Axios(config)
@@ -11,5 +12,9 @@ function createInstance(config: AxiosRequestConfig): AxiosStatic {
 }
 
 const axios = createInstance(defaults)
+
+axios.create = function create(config: AxiosRequestConfig): AxiosStatic {
+  return createInstance(mergeConfig(defaults, config))
+}
 
 export default axios
