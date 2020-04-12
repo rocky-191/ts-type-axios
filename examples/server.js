@@ -92,6 +92,14 @@ router.post('/config/post',function(req,res){
   res.json(req.headers)
 })
 
+router.get('/cancel/get',function(req,res){
+  res.json('cancel get')
+})
+
+router.post('/cancel/post',function(req,res){
+  res.json('cancel post')
+})
+
 app.use(router)
 
 const port=process.env.PORT || 8080
