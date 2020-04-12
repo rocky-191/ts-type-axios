@@ -84,6 +84,10 @@ router.put('/extend/put',function(req,res){
   res.json('extend put success')
 })
 
+router.get('/interceptor/get',function(req,res){
+  res.json(res.data)
+})
+
 app.use(router)
 
 const port=process.env.PORT || 8080
