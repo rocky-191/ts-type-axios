@@ -20,6 +20,12 @@ app.use(webpackDevMiddleware(compiler,{
   }
 }))
 
+app.use(express.static(__dirname, {
+  setHeaders (res) {
+    res.cookie('XSRF-TOKEN-D', '1234abc')
+  }
+}))
+
 app.use(multipart({
   uploadDir: path.resolve(__dirname, 'upload-file')
 }))

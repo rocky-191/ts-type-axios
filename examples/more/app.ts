@@ -31,6 +31,8 @@ axios.get('/more/get', {
 })
 
 const instance = axios.create({
+  xsrfCookieName: 'XSRF-TOKEN-D',
+  xsrfHeaderName: 'X-XSRF-TOKEN-D',
   paramsSerializer(params) {
     return qs.stringify(params, { arrayFormat: 'brackets' })
   }
