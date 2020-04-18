@@ -25,8 +25,8 @@ export default function xhr(config: AxiosRequestConfig): AxiosPromise {
     } = config
 
     const request = new XMLHttpRequest()
-
-    request.open(method.toUpperCase(), url!, true)
+    // request.open(method.toUpperCase(), url!, true)
+    request.open(method.toUpperCase(), url, true)
 
     configureRequest()
 
@@ -100,7 +100,7 @@ export default function xhr(config: AxiosRequestConfig): AxiosPromise {
         delete headers['Content-Type']
       }
 
-      if ((withCredentials || isURLSameOrigin(url!)) && xsrfCookieName) {
+      if ((withCredentials || isURLSameOrigin(url)) && xsrfCookieName) {
         const xsrfValue = cookie.read(xsrfCookieName)
         if (xsrfValue) {
           headers[xsrfHeaderName!] = xsrfValue
@@ -118,11 +118,17 @@ export default function xhr(config: AxiosRequestConfig): AxiosPromise {
 
     function processCancel(): void {
       if (cancelToken) {
-        // tslint:disable-next-line: no-floating-promises
-        cancelToken.promise.then(reason => {
-          request.abort()
-          reject(reason)
-        })
+        cancelToken.promise
+          .then(reason => {
+            request.abort()
+            reject(reason)
+          })
+          .catch(
+            /* istanbul ignore next */
+            err => {
+              console.log(err)
+            }
+          )
       }
     }
 
