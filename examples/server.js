@@ -113,6 +113,10 @@ router.post('/more/post',function(req,res){
   }
 })
 
+router.get('/more/get',function(req,res){
+  res.json('success')
+})
+
 app.use(router)
 
 const port=process.env.PORT || 8080

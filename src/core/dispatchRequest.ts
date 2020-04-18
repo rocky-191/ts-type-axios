@@ -30,7 +30,7 @@ function transformURL(config: AxiosRequestConfig): string {
   if (baseURL && !isAbsoluteURL(url)) {
     url = combineURL(baseURL, url)
   }
-  return buildURL(url, params)
+  return buildURL(url!, params, paramsSerializer)
 }
 
 function transformRequestData(config: AxiosRequestConfig): any {
