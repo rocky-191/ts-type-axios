@@ -1,3 +1,4 @@
+const path=require('path')
 const express=require('express')
 const router=express.Router()
 const bodyParser=require('body-parser')
@@ -6,6 +7,7 @@ const webpackDevMiddleware=require('webpack-dev-middleware')
 const webpackHotMiddleware=require('webpack-hot-middleware')
 const WebpackConfig=require('./webpack.config')
 const atob=require('atob')
+const multipart=require('connect-multiparty')
 
 const app=express()
 const compiler=webpack(WebpackConfig)
@@ -16,6 +18,10 @@ app.use(webpackDevMiddleware(compiler,{
     colors:true,
     chunks:false
   }
+}))
+
+app.use(multipart({
+  uploadDir: path.resolve(__dirname, 'upload-file')
 }))
 
 app.use(webpackHotMiddleware(compiler))
@@ -123,6 +129,11 @@ router.get('/more/A',function(req,res){
 
 router.get('/more/B',function(req,res){
   res.json('more b success')
+})
+
+router.post('/more/upload', function(req, res) {
+  console.log(req.body, req.files)
+  res.end('upload success!')
 })
 
 app.use(router)

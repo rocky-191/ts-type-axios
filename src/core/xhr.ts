@@ -1,6 +1,7 @@
 import { AxiosRequestConfig, AxiosResponse, AxiosPromise } from '../types'
 import { parseHeaders } from '../helpers/header'
 import { createError } from '../helpers/error'
+import { isFormData } from '../helpers/util'
 
 export default function xhr(config: AxiosRequestConfig): AxiosPromise {
   return new Promise((resolve, reject) => {
@@ -12,41 +13,106 @@ export default function xhr(config: AxiosRequestConfig): AxiosPromise {
       responseType,
       timeout,
       cancelToken,
-      auth
+      withCredentials,
+      xsrfCookieName,
+      xsrfHeaderName,
+      onDownloadProgress,
+      onUploadProgress
     } = config
+
     const request = new XMLHttpRequest()
 
-    if (auth) {
-      headers['Authorization'] = 'Basic ' + btoa(auth.username + ':' + auth.password)
+    request.open(method.toUpperCase(), url!, true)
+
+    configureRequest()
+
+    addEvents()
+
+    processHeaders()
+
+    processCancel()
+
+    request.send(data)
+
+    function configureRequest(): void {
+      if (responseType) {
+        request.responseType = responseType
+      }
+
+      if (timeout) {
+        request.timeout = timeout
+      }
+
+      if (withCredentials) {
+        request.withCredentials = withCredentials
+      }
     }
 
-    request.open(method.toUpperCase(), url, true)
-    processCancle()
+    function addEvents(): void {
+      request.onreadystatechange = function handleLoad() {
+        if (request.readyState !== 4) {
+          return
+        }
 
-    request.onreadystatechange = function handleLoad() {
-      if (request.readyState !== 4) {
-        return
+        if (request.status === 0) {
+          return
+        }
+
+        const responseHeaders = parseHeaders(request.getAllResponseHeaders())
+        const responseData =
+          responseType && responseType !== 'text' ? request.response : request.responseText
+        const response: AxiosResponse = {
+          data: responseData,
+          status: request.status,
+          statusText: request.statusText,
+          headers: responseHeaders,
+          config,
+          request
+        }
+        handleResponse(response)
       }
 
-      if (request.status === 0) {
-        return
+      request.onerror = function handleError() {
+        reject(createError('Network Error', config, null, request))
       }
-      const responseHeaders = parseHeaders(request.getAllResponseHeaders())
-      // const responseHeaders=request.getAllResponseHeaders()
-      const responseData =
-        responseType && responseType !== 'text' ? request.response : request.responseText
-      const response: AxiosResponse = {
-        data: responseData,
-        status: request.status,
-        statusText: request.statusText,
-        headers: responseHeaders,
-        config,
-        request
+
+      request.ontimeout = function handleTimeout() {
+        reject(
+          createError(`Timeout of ${config.timeout} ms exceeded`, config, 'ECONNABORTED', request)
+        )
       }
-      handleResponse(response)
+
+      if (onDownloadProgress) {
+        request.onprogress = onDownloadProgress
+      }
+
+      if (onUploadProgress) {
+        request.upload.onprogress = onUploadProgress
+      }
     }
 
-    function processCancle(): void {
+    function processHeaders(): void {
+      if (isFormData(data)) {
+        delete headers['Content-Type']
+      }
+
+      // if ((withCredentials || isURLSameOrigin(url!)) && xsrfCookieName) {
+      //   const xsrfValue = cookie.read(xsrfCookieName)
+      //   if (xsrfValue) {
+      //     headers[xsrfHeaderName!] = xsrfValue
+      //   }
+      // }
+
+      Object.keys(headers).forEach(name => {
+        if (data === null && name.toLowerCase() === 'content-type') {
+          delete headers[name]
+        } else {
+          request.setRequestHeader(name, headers[name])
+        }
+      })
+    }
+
+    function processCancel(): void {
       if (cancelToken) {
         // tslint:disable-next-line: no-floating-promises
         cancelToken.promise.then(reason => {
@@ -56,8 +122,8 @@ export default function xhr(config: AxiosRequestConfig): AxiosPromise {
       }
     }
 
-    function handleResponse(response: AxiosResponse) {
-      if (response.status >= 200 && response.status <= 300) {
+    function handleResponse(response: AxiosResponse): void {
+      if (response.status >= 200 && response.status < 300) {
         resolve(response)
       } else {
         reject(
@@ -71,31 +137,5 @@ export default function xhr(config: AxiosRequestConfig): AxiosPromise {
         )
       }
     }
-
-    if (responseType) {
-      request.responseType = responseType
-    }
-
-    request.onerror = function handleError() {
-      reject(createError('Network error', config, null, request))
-    }
-
-    if (timeout) {
-      request.timeout = timeout
-    }
-    request.ontimeout = function handletimeout() {
-      reject(createError(`Timeout of ${timeout} ms exceeded`, config, 'ECONNABORTED', request))
-    }
-
-    Object.keys(headers).forEach(name => {
-      // 当我们传入的 data 为空的时候，请求 header 配置 Content-Type 是没有意义的
-      if (data === null && name.toLowerCase() === 'content-type') {
-        delete headers[name]
-      } else {
-        request.setRequestHeader(name, headers[name])
-      }
-    })
-
-    request.send(data)
   })
 }
