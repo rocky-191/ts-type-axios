@@ -35,4 +35,8 @@ methodsNoData.forEach(method => {
   }
 })
 
+export function validateStatus(status: number): boolean {
+  return status >= 200 && status < 300
+}
+
 export default defaults

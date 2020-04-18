@@ -1,4 +1,4 @@
-import axios from '../../src/axios'
+import axios,{AxiosError} from '../../src/index'
 import qs from 'qs'
 import NProgress from 'nprogress'
 import "nprogress/nprogress.css";
@@ -132,4 +132,20 @@ uploadEl!.addEventListener('click', e => {
 
     instance.post('/more/upload', data)
   }
+})
+
+axios.get('/more/304').then(res => {
+  console.log(res)
+}).catch((e: AxiosError) => {
+  console.log(e.message)
+})
+
+axios.get('/more/304', {
+  validateStatus(status) {
+    return status >= 200 && status < 400
+  }
+}).then(res => {
+  console.log(res)
+}).catch((e: AxiosError) => {
+  console.log(e.message)
 })
