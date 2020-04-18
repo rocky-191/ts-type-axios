@@ -141,6 +141,10 @@ router.get('/more/304', function(req, res) {
   res.end()
 })
 
+router.get('http://127.0.0.1:8088/more/server2',function(req,res){
+  res.end('跨域')
+})
+
 app.use(router)
 
 const port=process.env.PORT || 8080

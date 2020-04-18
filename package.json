@@ -23,6 +23,7 @@
     "prebuild": "rimraf dist",
     "build": "tsc --module commonjs && rollup -c rollup.config.ts && typedoc --out docs --target es6 --theme minimal --mode file src",
     "dev": "node examples/server.js",
+    "dev2": "node examples/server2.js",
     "start": "rollup -c rollup.config.ts -w",
     "test": "jest --coverage",
     "test:watch": "jest --coverage --watch",
@@ -128,6 +129,7 @@
   },
   "dependencies": {
     "atob": "^2.1.2",
+    "cookie-parser": "^1.4.5",
     "css-loader": "^3.5.2",
     "nprogress": "^0.2.0"
   }
