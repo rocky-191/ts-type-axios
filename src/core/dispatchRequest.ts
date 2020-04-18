@@ -19,13 +19,13 @@ function throwIfCancellationRequested(config: AxiosRequestConfig): void {
   }
 }
 
-function processConfig(config: AxiosRequestConfig): void {
+export function processConfig(config: AxiosRequestConfig): void {
   config.url = transformURL(config)
   config.data = transform(config.data, config.headers, config.transformRequest)
   config.headers = flattenHeaders(config.headers, config.method!)
 }
 
-function transformURL(config: AxiosRequestConfig): string {
+export function transformURL(config: AxiosRequestConfig): string {
   let { url, params, paramsSerializer, baseURL } = config
   if (baseURL && !isAbsoluteURL(url)) {
     url = combineURL(baseURL, url)
@@ -33,16 +33,16 @@ function transformURL(config: AxiosRequestConfig): string {
   return buildURL(url!, params, paramsSerializer)
 }
 
-function transformRequestData(config: AxiosRequestConfig): any {
+export function transformRequestData(config: AxiosRequestConfig): any {
   return transformRequest(config.data)
 }
 
-function transformHeaders(config: AxiosRequestConfig) {
+export function transformHeaders(config: AxiosRequestConfig) {
   const { headers = {}, data } = config
   return processHeaders(headers, data)
 }
 
-function transformResponseData(res: AxiosResponse): AxiosResponse {
+export function transformResponseData(res: AxiosResponse): AxiosResponse {
   res.data = transform(res.data, res.headers, res.config.transformResponse)
   return res
 }

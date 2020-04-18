@@ -117,6 +117,14 @@ router.get('/more/get',function(req,res){
   res.json('success')
 })
 
+router.get('/more/A',function(req,res){
+  res.json('more a success')
+})
+
+router.get('/more/B',function(req,res){
+  res.json('more b success')
+})
+
 app.use(router)
 
 const port=process.env.PORT || 8080
